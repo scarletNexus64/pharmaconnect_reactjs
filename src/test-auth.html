@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Authentification PharmaConnect</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        button {
+            background: #28a745;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-right: 10px;
+        }
+        button:hover {
+            background: #218838;
+        }
+        .demo-btn {
+            background: #007bff;
+        }
+        .demo-btn:hover {
+            background: #0056b3;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            background: #f8f9fa;
+            border-left: 4px solid #28a745;
+        }
+        .error {
+            border-left-color: #dc3545;
+            background: #f8d7da;
+        }
+        pre {
+            background: #f1f1f1;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Test Authentification PharmaConnect</h1>
+        <p>Testez la connexion à l'API Django depuis le frontend</p>
+        
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="username">Nom d'utilisateur :</label>
+                <input type="text" id="username" name="username" value="claudeUserTest">
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Mot de passe :</label>
+                <input type="password" id="password" name="password" value="TestPassword123!">
+            </div>
+            
+            <button type="submit">🔐 Se connecter</button>
+            <button type="button" class="demo-btn" onclick="testAPI()">🧪 Test API</button>
+        </form>
+        
+        <div id="result"></div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://10.47.126.108:8000/api';
+        
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            await testLogin(username, password);
+        });
+        
+        async function testLogin(username, password) {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '<p>⏳ Test de connexion en cours...</p>';
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/auth/login/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ username, password })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    resultDiv.className = 'result';
+                    resultDiv.innerHTML = `
+                        <h3>✅ Connexion réussie !</h3>
+                        <p><strong>Utilisateur :</strong> ${data.user.first_name} ${data.user.last_name}</p>
+                        <p><strong>Email :</strong> ${data.user.email}</p>
+                        <p><strong>Organisation :</strong> ${data.user.organization_name}</p>
+                        <p><strong>Formation sanitaire :</strong> ${data.user.health_facility_name}</p>
+                        <p><strong>Niveau d'accès :</strong> ${data.user.access_level}</p>
+                        <p><strong>Token :</strong> ${data.token.substring(0, 20)}...</p>
+                        <h4>Réponse complète :</h4>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    `;
+                    
+                    // Stocker le token pour les tests suivants
+                    localStorage.setItem('authToken', data.token);
+                    
+                } else {
+                    throw new Error(data.detail || 'Erreur de connexion');
+                }
+                
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = `
+                    <h3>❌ Erreur de connexion</h3>
+                    <p><strong>Message :</strong> ${error.message}</p>
+                    <p>Vérifiez que le serveur Django est démarré sur <code>http://10.47.126.108:8000</code></p>
+                `;
+            }
+        }
+        
+        async function testAPI() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '<p>⏳ Test des endpoints API...</p>';
+            
+            const token = localStorage.getItem('authToken');
+            if (!token) {
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = '<p>❌ Aucun token d\'authentification. Connectez-vous d\'abord.</p>';
+                return;
+            }
+            
+            const endpoints = [
+                '/organizations/',
+                '/medications/',
+                '/stock-entries/',
+                '/dispensations/',
+                '/alerts/'
+            ];
+            
+            const results = [];
+            
+            for (const endpoint of endpoints) {
+                try {
+                    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+                        headers: {
+                            'Authorization': `Token ${token}`,
+                            'Content-Type': 'application/json'
+                        }
+                    });
+                    
+                    const data = await response.json();
+                    results.push({
+                        endpoint,
+                        status: response.status,
+                        success: response.ok,
+                        count: data.results ? data.results.length : 'N/A',
+                        data: data
+                    });
+                    
+                } catch (error) {
+                    results.push({
+                        endpoint,
+                        status: 'Error',
+                        success: false,
+                        error: error.message
+                    });
+                }
+            }
+            
+            resultDiv.className = 'result';
+            resultDiv.innerHTML = `
+                <h3>🧪 Résultats des tests API</h3>
+                ${results.map(result => `
+                    <div style="margin: 10px 0; padding: 10px; background: ${result.success ? '#d4edda' : '#f8d7da'}; border-radius: 5px;">
+                        <strong>${result.endpoint}</strong> - 
+                        <span style="color: ${result.success ? 'green' : 'red'}">
+                            ${result.success ? '✅' : '❌'} Status: ${result.status}
+                        </span>
+                        ${result.count !== undefined ? ` (${result.count} éléments)` : ''}
+                        ${result.error ? `<br>Erreur: ${result.error}` : ''}
+                    </div>
+                `).join('')}
+            `;
+        }
+        
+        // Test initial au chargement
+        window.onload = () => {
+            console.log('🧪 Page de test chargée. API disponible sur:', API_BASE_URL);
+        };
+    </script>
+</body>
+</html>
