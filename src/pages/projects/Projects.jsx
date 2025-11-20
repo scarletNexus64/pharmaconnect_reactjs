@@ -1,19 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import {
-  FolderOpen, Calendar, DollarSign, MapPin, 
-  ChevronRight, Activity, Bell, LogOut, Building,
-  Clock, CheckCircle, AlertCircle
+  FolderOpen, Calendar, DollarSign, MapPin,
+  ChevronRight, Activity, Building,
+  Clock, CheckCircle, AlertCircle, Plus, Edit, Trash2
 } from 'lucide-react';
 import Card from '../../components/ui/Card';
+import Button from '../../components/ui/Button';
 import ProtectedRoute from '../../components/ProtectedRoute';
-import { useAuth } from '../../hooks/useAuth';
+import ProjectManagementModal from '../../components/Projects/ProjectManagementModal';
 import apiService from '../../services/api';
+import { Link } from 'react-router-dom';
 
 const Projects = () => {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [showNotifications, setShowNotifications] = useState(false);
-  const { user, logout } = useAuth();
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [selectedProject, setSelectedProject] = useState(null);
+  const [showEditModal, setShowEditModal] = useState(false);
 
   useEffect(() => {
     loadProjects();
@@ -30,11 +33,6 @@ const Projects = () => {
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleLogout = async () => {
-    await logout();
-    window.location.href = '/';
   };
 
   const getProjectStatus = (project) => {
@@ -55,19 +53,38 @@ const Projects = () => {
     const now = new Date();
     const startDate = new Date(project.start_date);
     const endDate = new Date(project.end_date);
-    
+
     if (now < startDate) return 0;
     if (now > endDate) return 100;
-    
+
     const total = endDate - startDate;
     const elapsed = now - startDate;
     return Math.round((elapsed / total) * 100);
   };
 
+  const handleEditProject = (project) => {
+    setSelectedProject(project);
+    setShowEditModal(true);
+  };
+
+  const handleDeleteProject = async (project) => {
+    if (!window.confirm(`Êtes-vous sûr de vouloir supprimer le projet "${project.name}" ?`)) {
+      return;
+    }
+
+    try {
+      await apiService.deleteProject(project.id);
+      loadProjects();
+    } catch (error) {
+      console.error('Erreur lors de la suppression:', error);
+      alert('Erreur lors de la suppression du projet');
+    }
+  };
+
   if (loading) {
     return (
       <ProtectedRoute>
-        <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="flex items-center justify-center py-12">
           <div className="text-center">
             <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-green-500 mx-auto mb-4"></div>
             <p className="text-gray-600">Chargement des projets...</p>
@@ -79,84 +96,30 @@ const Projects = () => {
 
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-gray-50">
-        {/* Header */}
-        <header className="bg-white shadow-sm border-b">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex justify-between items-center h-16">
-              <div className="flex items-center space-x-4">
-                <div className="flex items-center space-x-2">
-                  <div className="w-8 h-8 bg-gradient-to-r from-green-500 to-blue-500 rounded-lg flex items-center justify-center">
-                    <Activity className="w-5 h-5 text-white" />
-                  </div>
-                  <span className="text-xl font-bold text-gray-900">PharmaConnect</span>
-                </div>
-                <div className="hidden md:block text-sm text-gray-500">
-                  Gestion des Projets
-                </div>
-              </div>
+      <div className="space-y-8">
+        {/* Breadcrumb */}
+        <nav className="flex items-center space-x-2 text-sm text-gray-500">
+          <Link to="/dashboard" className="hover:text-gray-700">Dashboard</Link>
+          <ChevronRight className="w-4 h-4" />
+          <span className="text-gray-700 font-medium">Projets</span>
+        </nav>
 
-              <div className="flex items-center space-x-4">
-                <div className="hidden md:flex items-center space-x-4 text-sm">
-                  <button 
-                    onClick={() => window.location.href = '/profile'}
-                    className="flex items-center space-x-2 hover:bg-gray-100 px-3 py-2 rounded-md transition-colors"
-                  >
-                    <div className="w-8 h-8 bg-gradient-to-r from-green-400 to-blue-500 rounded-full flex items-center justify-center">
-                      <span className="text-white text-sm font-medium">
-                        {user?.first_name?.[0]}{user?.last_name?.[0]}
-                      </span>
-                    </div>
-                    <div className="text-left">
-                      <div className="text-gray-700 font-medium">
-                        {user?.first_name} {user?.last_name}
-                      </div>
-                      <div className="text-gray-500 text-xs">
-                        Administrateur Plateforme
-                      </div>
-                    </div>
-                  </button>
-                </div>
-
-                <button 
-                  onClick={() => setShowNotifications(!showNotifications)}
-                  className="relative p-2 text-gray-400 hover:text-gray-500"
-                >
-                  <Bell className="w-6 h-6" />
-                </button>
-
-                <button 
-                  onClick={handleLogout}
-                  className="flex items-center space-x-2 px-3 py-2 text-sm text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-md transition-colors"
-                >
-                  <LogOut className="w-4 h-4" />
-                  <span>Déconnexion</span>
-                </button>
-              </div>
-            </div>
-          </div>
-        </header>
-
-        {/* Main Content */}
-        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          {/* Breadcrumb */}
-          <nav className="flex items-center space-x-2 text-sm text-gray-500 mb-6">
-            <a href="/dashboard" className="hover:text-gray-700">Dashboard</a>
-            <ChevronRight className="w-4 h-4" />
-            <span className="text-gray-700 font-medium">Projets</span>
-          </nav>
-
-          {/* Page Title */}
-          <div className="mb-8">
+        {/* Page Title and Actions */}
+        <div className="flex justify-between items-start">
+          <div>
             <h1 className="text-2xl font-bold text-gray-900">Mes Projets</h1>
             <p className="text-gray-600 mt-2">
               Consultez et gérez les projets de vos organisations.
-              Les nouveaux projets doivent être créés via l'interface d'administration Django.
             </p>
           </div>
+          <Button onClick={() => setShowCreateModal(true)} className="flex items-center space-x-2">
+            <Plus className="w-4 h-4" />
+            <span>Nouveau projet</span>
+          </Button>
+        </div>
 
-          {/* Stats Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
             <Card className="p-6">
               <div className="flex items-center">
                 <div className="flex-shrink-0">
@@ -213,9 +176,9 @@ const Projects = () => {
                 </div>
               </div>
             </Card>
-          </div>
+        </div>
 
-          {/* Projects List */}
+        {/* Projects List */}
           {projects.length > 0 ? (
             <div className="space-y-6">
               {projects.map((project) => {
@@ -270,13 +233,35 @@ const Projects = () => {
                           </div>
                         </div>
 
-                        <button 
-                          onClick={() => window.location.href = `/projects/${project.id}`}
-                          className="ml-4 px-4 py-2 bg-gradient-to-r from-green-500 to-blue-500 text-white rounded-lg hover:opacity-90 transition-opacity flex items-center"
-                        >
-                          Voir détails
-                          <ChevronRight className="w-4 h-4 ml-2" />
-                        </button>
+                        <div className="ml-4 flex flex-col space-y-2">
+                          <Link
+                            to={`/projects/${project.id}`}
+                            className="px-4 py-2 bg-gradient-to-r from-green-500 to-blue-500 text-white rounded-lg hover:opacity-90 transition-opacity flex items-center justify-center"
+                          >
+                            Voir détails
+                            <ChevronRight className="w-4 h-4 ml-2" />
+                          </Link>
+                          <button
+                            onClick={(e) => {
+                              e.preventDefault();
+                              handleEditProject(project);
+                            }}
+                            className="px-4 py-2 border border-blue-500 text-blue-600 rounded-lg hover:bg-blue-50 transition-colors flex items-center justify-center"
+                          >
+                            <Edit className="w-4 h-4 mr-2" />
+                            Modifier
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.preventDefault();
+                              handleDeleteProject(project);
+                            }}
+                            className="px-4 py-2 border border-red-500 text-red-600 rounded-lg hover:bg-red-50 transition-colors flex items-center justify-center"
+                          >
+                            <Trash2 className="w-4 h-4 mr-2" />
+                            Supprimer
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </Card>
@@ -290,31 +275,35 @@ const Projects = () => {
                 <h3 className="text-lg font-medium text-gray-900 mb-2">
                   Aucun projet trouvé
                 </h3>
-                <p className="text-gray-500">
+                <p className="text-gray-500 mb-4">
                   Aucun projet n'est associé à vos organisations.
-                  Contactez l'administrateur système pour créer un nouveau projet.
                 </p>
+                <Button onClick={() => setShowCreateModal(true)} className="flex items-center space-x-2 mx-auto">
+                  <Plus className="w-4 h-4" />
+                  <span>Créer votre premier projet</span>
+                </Button>
               </div>
             </Card>
           )}
 
-          {/* Info Card */}
-          <Card className="mt-8 bg-blue-50 border-blue-200">
-            <div className="p-6">
-              <div className="flex items-start space-x-3">
-                <AlertCircle className="w-5 h-5 text-blue-600 mt-0.5" />
-                <div>
-                  <h4 className="text-sm font-medium text-blue-900">Information importante</h4>
-                  <p className="text-sm text-blue-700 mt-1">
-                    Les projets sont gérés par l'administrateur de la plateforme via Django Admin. 
-                    Si vous avez besoin de créer un nouveau projet ou de modifier les informations 
-                    existantes, veuillez contacter l'administrateur système.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </Card>
-        </main>
+        {/* Modals */}
+        {showCreateModal && (
+          <ProjectManagementModal
+            onClose={() => setShowCreateModal(false)}
+            onSave={loadProjects}
+          />
+        )}
+
+        {showEditModal && selectedProject && (
+          <ProjectManagementModal
+            project={selectedProject}
+            onClose={() => {
+              setShowEditModal(false);
+              setSelectedProject(null);
+            }}
+            onSave={loadProjects}
+          />
+        )}
       </div>
     </ProtectedRoute>
   );

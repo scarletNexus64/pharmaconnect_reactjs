@@ -16,7 +16,7 @@ import { useAuth } from '../../hooks/useAuth';
 import apiService from '../../services/api';
 import HealthFacilityModal from '../../components/HealthFacilities/HealthFacilityModal';
 import HealthFacilityDetailsModal from '../../components/HealthFacilities/HealthFacilityDetailsModal';
-import DistributorModal from '../../components/HealthFacilities/DistributorModal';
+import DistributorManagementModal from '../../components/HealthFacilities/DistributorManagementModal';
 
 // Correction du problème des icônes Leaflet
 delete L.Icon.Default.prototype._getIconUrl;
@@ -213,66 +213,6 @@ const HealthFacilities = () => {
   return (
     <ProtectedRoute>
       <div className="min-h-screen bg-gray-50">
-        {/* Header */}
-        <div className="bg-white border-b border-gray-200">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center justify-between h-16">
-              <div className="flex items-center">
-                <Building2 className="h-8 w-8 text-blue-600" />
-                <h1 className="ml-3 text-xl font-semibold text-gray-900">
-                  Formations Sanitaires
-                </h1>
-              </div>
-
-              <div className="flex items-center space-x-4">
-                <div className="relative">
-                  <button
-                    onClick={() => setShowNotifications(!showNotifications)}
-                    className="p-2 text-gray-400 hover:text-gray-500"
-                  >
-                    <Bell className="h-5 w-5" />
-                  </button>
-                </div>
-
-                <div className="flex items-center space-x-2">
-                  <span className="text-sm text-gray-700">
-                    {user?.first_name} {user?.last_name}
-                  </span>
-                  <button
-                    onClick={handleLogout}
-                    className="p-2 text-gray-400 hover:text-gray-500"
-                  >
-                    <LogOut className="h-5 w-5" />
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Navigation */}
-        <div className="bg-white border-b border-gray-200">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <nav className="flex space-x-8">
-              <a href="/dashboard" className="flex items-center px-1 pt-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700">
-                <Activity className="h-4 w-4 mr-1" />
-                Dashboard
-              </a>
-              <a href="/medications" className="flex items-center px-1 pt-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700">
-                <Pill className="h-4 w-4 mr-1" />
-                Médicaments
-              </a>
-              <a href="/health-facilities" className="flex items-center px-1 pt-1 border-b-2 border-blue-500 text-blue-600">
-                <Building2 className="h-4 w-4 mr-1" />
-                Formations
-              </a>
-              <a href="/projects" className="flex items-center px-1 pt-1 border-b-2 border-transparent text-gray-500 hover:text-gray-700">
-                <Package className="h-4 w-4 mr-1" />
-                Projets
-              </a>
-            </nav>
-          </div>
-        </div>
 
         {/* Stats Cards */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -509,11 +449,13 @@ const HealthFacilities = () => {
         )}
 
         {showDistributorModal && selectedFacility && (
-          <DistributorModal
-            isOpen={showDistributorModal}
-            onClose={() => setShowDistributorModal(false)}
+          <DistributorManagementModal
             facility={selectedFacility}
-            onSave={loadData}
+            onClose={() => {
+              setShowDistributorModal(false);
+              setSelectedFacility(null);
+            }}
+            onUpdate={loadData}
           />
         )}
       </div>

@@ -39,6 +39,12 @@ import Projects from './pages/projects/Projects';
 import ProjectDetail from './pages/projects/ProjectDetail';
 import Medications from './pages/medications/Medications';
 import HealthFacilities from './pages/health-facilities/HealthFacilities';
+import Stock from './pages/stock/Stock';
+import Dispensation from './pages/dispensation/Dispensation';
+import Users from './pages/users/Users';
+
+// Layout
+import DashboardLayout from './components/layout/DashboardLayout';
 
 // Layout wrapper for authenticated pages
 const AuthenticatedLayout = ({ children, userRole }) => {
@@ -204,12 +210,16 @@ function App() {
         <Route path="/" element={<LandingPage onLogin={() => window.location.href = '/login'} />} />
         <Route path="/login" element={<Login onBack={() => window.location.href = '/'} />} />
         
-        {/* Protected Routes */}
+        {/* Protected Routes - All dashboard pages wrapped with DashboardLayout */}
         <Route path="/dashboard" element={
           (() => {
-            // Si authentifié avec l'API réelle, utiliser le nouveau dashboard sans wrapper
+            // Si authentifié avec l'API réelle, utiliser le nouveau dashboard avec le layout
             if (apiService.isAuthenticated()) {
-              return <Dashboard />;
+              return (
+                <DashboardLayout>
+                  <Dashboard />
+                </DashboardLayout>
+              );
             }
             // Sinon utiliser l'ancien système avec wrapper
             return (
@@ -221,7 +231,11 @@ function App() {
         } />
 
         {/* Medications Routes */}
-        <Route path="/medications" element={<Medications />} />
+        <Route path="/medications" element={
+          <DashboardLayout>
+            <Medications />
+          </DashboardLayout>
+        } />
         
         <Route path="/medication-categories" element={
           <ProtectedRoute userRole={userRole} allowedRoles={['Super Admin', 'Admin ONG', 'Gestionnaire Projet']}>
@@ -311,8 +325,16 @@ function App() {
           </ProtectedRoute>
         } />
         
-        <Route path="/organizations" element={<Organizations />} />
-        <Route path="/organizations/:id" element={<OrganizationDetail />} />
+        <Route path="/organizations" element={
+          <DashboardLayout>
+            <Organizations />
+          </DashboardLayout>
+        } />
+        <Route path="/organizations/:id" element={
+          <DashboardLayout>
+            <OrganizationDetail />
+          </DashboardLayout>
+        } />
 
         <Route path="/admin/users" element={
           <ProtectedRoute userRole={userRole} allowedRoles={['Super Admin']}>
@@ -327,11 +349,44 @@ function App() {
         } />
 
         {/* Projects Routes */}
-        <Route path="/projects" element={<Projects />} />
-        <Route path="/projects/:id" element={<ProjectDetail />} />
+        <Route path="/projects" element={
+          <DashboardLayout>
+            <Projects />
+          </DashboardLayout>
+        } />
+        <Route path="/projects/:id" element={
+          <DashboardLayout>
+            <ProjectDetail />
+          </DashboardLayout>
+        } />
 
         {/* Health Facilities Routes */}
-        <Route path="/health-facilities" element={<HealthFacilities />} />
+        <Route path="/health-facilities" element={
+          <DashboardLayout>
+            <HealthFacilities />
+          </DashboardLayout>
+        } />
+
+        {/* Users Routes */}
+        <Route path="/users" element={
+          <DashboardLayout>
+            <Users />
+          </DashboardLayout>
+        } />
+
+        {/* Stock Routes */}
+        <Route path="/stock" element={
+          <DashboardLayout>
+            <Stock />
+          </DashboardLayout>
+        } />
+
+        {/* Dispensation Routes */}
+        <Route path="/dispensation" element={
+          <DashboardLayout>
+            <Dispensation />
+          </DashboardLayout>
+        } />
         
         <Route path="/health-facilities-old" element={
           <ProtectedRoute userRole={userRole} allowedRoles={['Admin ONG', 'Gestionnaire Projet']}>

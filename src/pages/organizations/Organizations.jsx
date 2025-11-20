@@ -1,18 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import {
-  Building, Users, MapPin, Calendar, ChevronRight,
-  Activity, Package, AlertTriangle, TrendingUp, Bell, LogOut
+  Building, Users, MapPin, Calendar, ChevronRight, AlertTriangle
 } from 'lucide-react';
 import Card from '../../components/ui/Card';
 import ProtectedRoute from '../../components/ProtectedRoute';
 import { useAuth } from '../../hooks/useAuth';
 import apiService from '../../services/api';
+import { Link } from 'react-router-dom';
 
 const Organizations = () => {
   const [organizations, setOrganizations] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [showNotifications, setShowNotifications] = useState(false);
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
 
   useEffect(() => {
     loadOrganizations();
@@ -31,15 +30,10 @@ const Organizations = () => {
     }
   };
 
-  const handleLogout = async () => {
-    await logout();
-    window.location.href = '/';
-  };
-
   if (loading) {
     return (
       <ProtectedRoute>
-        <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="flex items-center justify-center py-12">
           <div className="text-center">
             <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-green-500 mx-auto mb-4"></div>
             <p className="text-gray-600">Chargement des organisations...</p>
@@ -51,83 +45,24 @@ const Organizations = () => {
 
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-gray-50">
-        {/* Header */}
-        <header className="bg-white shadow-sm border-b">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex justify-between items-center h-16">
-              <div className="flex items-center space-x-4">
-                <div className="flex items-center space-x-2">
-                  <div className="w-8 h-8 bg-gradient-to-r from-green-500 to-blue-500 rounded-lg flex items-center justify-center">
-                    <Activity className="w-5 h-5 text-white" />
-                  </div>
-                  <span className="text-xl font-bold text-gray-900">PharmaConnect</span>
-                </div>
-                <div className="hidden md:block text-sm text-gray-500">
-                  Gestion des Organisations
-                </div>
-              </div>
+      <div className="space-y-8">
+        {/* Breadcrumb */}
+        <nav className="flex items-center space-x-2 text-sm text-gray-500">
+          <Link to="/dashboard" className="hover:text-gray-700">Dashboard</Link>
+          <ChevronRight className="w-4 h-4" />
+          <span className="text-gray-700 font-medium">Organisations</span>
+        </nav>
 
-              <div className="flex items-center space-x-4">
-                <div className="hidden md:flex items-center space-x-4 text-sm">
-                  <button 
-                    onClick={() => window.location.href = '/profile'}
-                    className="flex items-center space-x-2 hover:bg-gray-100 px-3 py-2 rounded-md transition-colors"
-                  >
-                    <div className="w-8 h-8 bg-gradient-to-r from-green-400 to-blue-500 rounded-full flex items-center justify-center">
-                      <span className="text-white text-sm font-medium">
-                        {user?.first_name?.[0]}{user?.last_name?.[0]}
-                      </span>
-                    </div>
-                    <div className="text-left">
-                      <div className="text-gray-700 font-medium">
-                        {user?.first_name} {user?.last_name}
-                      </div>
-                      <div className="text-gray-500 text-xs">
-                        Administrateur Plateforme
-                      </div>
-                    </div>
-                  </button>
-                </div>
-
-                <button 
-                  onClick={() => setShowNotifications(!showNotifications)}
-                  className="relative p-2 text-gray-400 hover:text-gray-500"
-                >
-                  <Bell className="w-6 h-6" />
-                </button>
-
-                <button 
-                  onClick={handleLogout}
-                  className="flex items-center space-x-2 px-3 py-2 text-sm text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-md transition-colors"
-                >
-                  <LogOut className="w-4 h-4" />
-                  <span>Déconnexion</span>
-                </button>
-              </div>
-            </div>
-          </div>
-        </header>
-
-        {/* Main Content */}
-        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          {/* Breadcrumb */}
-          <nav className="flex items-center space-x-2 text-sm text-gray-500 mb-6">
-            <a href="/dashboard" className="hover:text-gray-700">Dashboard</a>
-            <ChevronRight className="w-4 h-4" />
-            <span className="text-gray-700 font-medium">Organisations</span>
-          </nav>
-
-          {/* Page Title */}
-          <div className="mb-8">
+        {/* Page Title */}
+        <div>
             <h1 className="text-2xl font-bold text-gray-900">Mes Organisations</h1>
             <p className="text-gray-600 mt-2">
               Gérez vos organisations et accédez aux détails de chaque structure.
               Les nouvelles organisations doivent être créées via l'interface d'administration Django.
             </p>
-          </div>
+        </div>
 
-          {/* Organizations Grid */}
+        {/* Organizations Grid */}
           {organizations.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {organizations.map((org) => (
@@ -167,13 +102,13 @@ const Organizations = () => {
                       )}
                     </div>
 
-                    <button 
-                      onClick={() => window.location.href = `/organizations/${org.id}`}
+                    <Link
+                      to={`/organizations/${org.id}`}
                       className="mt-6 w-full bg-gradient-to-r from-green-500 to-blue-500 text-white py-2 px-4 rounded-lg hover:opacity-90 transition-opacity flex items-center justify-center"
                     >
                       Voir les détails
                       <ChevronRight className="w-4 h-4 ml-2" />
-                    </button>
+                    </Link>
                   </div>
                 </Card>
               ))}
@@ -193,8 +128,8 @@ const Organizations = () => {
             </Card>
           )}
 
-          {/* Info Card */}
-          <Card className="mt-8 bg-blue-50 border-blue-200">
+        {/* Info Card */}
+        <Card className="bg-blue-50 border-blue-200">
             <div className="p-6">
               <div className="flex items-start space-x-3">
                 <AlertTriangle className="w-5 h-5 text-blue-600 mt-0.5" />
@@ -207,9 +142,8 @@ const Organizations = () => {
                   </p>
                 </div>
               </div>
-            </div>
-          </Card>
-        </main>
+          </div>
+        </Card>
       </div>
     </ProtectedRoute>
   );

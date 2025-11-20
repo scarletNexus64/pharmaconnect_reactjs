@@ -8,12 +8,27 @@ export const useAuth = () => {
 
   useEffect(() => {
     // Vérifier l'état d'authentification au chargement
-    const checkAuth = () => {
+    const checkAuth = async () => {
       const authStatus = apiService.isAuthenticated();
-      const userData = apiService.getCurrentUser();
-      
-      setIsAuthenticated(authStatus);
-      setUser(userData);
+
+      if (authStatus) {
+        try {
+          // Récupérer les données à jour de l'utilisateur depuis l'API
+          const userData = await apiService.getUserProfile();
+          setIsAuthenticated(true);
+          setUser(userData);
+        } catch (error) {
+          console.error('Erreur lors de la récupération du profil:', error);
+          // Fallback sur les données localStorage si l'API échoue
+          const userData = apiService.getCurrentUser();
+          setIsAuthenticated(authStatus);
+          setUser(userData);
+        }
+      } else {
+        setIsAuthenticated(false);
+        setUser(null);
+      }
+
       setLoading(false);
     };
 

@@ -1,5 +1,5 @@
 // Configuration de base pour l'API
-const API_BASE_URL = 'http://192.168.100.19:8001/api';
+const API_BASE_URL = 'http://192.168.1.150:8001/api';
 
 class ApiService {
   constructor() {
@@ -135,11 +135,38 @@ class ApiService {
     return await this.request(`/users/available_distributors/${params}`);
   }
 
+  // Rechercher des utilisateurs
+  async searchUsers(searchTerm) {
+    const params = searchTerm ? `?search=${encodeURIComponent(searchTerm)}` : '';
+    return await this.request(`/users/${params}`);
+  }
+
+  // Obtenir tous les utilisateurs
+  async getUsers(filters = {}) {
+    const params = new URLSearchParams(filters).toString();
+    return await this.request(`/users/${params ? '?' + params : ''}`);
+  }
+
   // Mettre à jour le profil utilisateur
   async updateUserProfile(userId, userData) {
     return await this.request(`/users/${userId}/`, {
       method: 'PATCH',
       body: JSON.stringify(userData),
+    });
+  }
+
+  // Créer un nouvel utilisateur
+  async createUser(userData) {
+    return await this.request('/users/', {
+      method: 'POST',
+      body: JSON.stringify(userData),
+    });
+  }
+
+  // Supprimer un utilisateur
+  async deleteUser(userId) {
+    return await this.request(`/users/${userId}/`, {
+      method: 'DELETE',
     });
   }
 
@@ -156,6 +183,42 @@ class ApiService {
   // Projets
   async getProjects() {
     return await this.request('/projects/');
+  }
+
+  async createProject(projectData) {
+    return await this.request('/projects/', {
+      method: 'POST',
+      body: JSON.stringify(projectData),
+    });
+  }
+
+  async updateProject(id, projectData) {
+    return await this.request(`/projects/${id}/`, {
+      method: 'PATCH',
+      body: JSON.stringify(projectData),
+    });
+  }
+
+  async deleteProject(id) {
+    return await this.request(`/projects/${id}/`, {
+      method: 'DELETE',
+    });
+  }
+
+  async getProjectById(id) {
+    return await this.request(`/projects/${id}/`);
+  }
+
+  // Donors
+  async getDonors() {
+    return await this.request('/donors/');
+  }
+
+  async createDonor(donorData) {
+    return await this.request('/donors/', {
+      method: 'POST',
+      body: JSON.stringify(donorData),
+    });
   }
 
   // Formations sanitaires
@@ -275,8 +338,42 @@ class ApiService {
   }
 
   // Stocks
-  async getStockEntries() {
-    return await this.request('/stock-entries/');
+  async getStockEntries(filters = {}) {
+    const params = new URLSearchParams(filters).toString();
+    return await this.request(`/stock-entries/${params ? '?' + params : ''}`);
+  }
+
+  async getStockEntryById(id) {
+    return await this.request(`/stock-entries/${id}/`);
+  }
+
+  async createStockEntry(stockData) {
+    return await this.request('/stock-entries/', {
+      method: 'POST',
+      body: JSON.stringify(stockData),
+    });
+  }
+
+  async updateStockEntry(id, stockData) {
+    return await this.request(`/stock-entries/${id}/`, {
+      method: 'PATCH',
+      body: JSON.stringify(stockData),
+    });
+  }
+
+  async deleteStockEntry(id) {
+    return await this.request(`/stock-entries/${id}/`, {
+      method: 'DELETE',
+    });
+  }
+
+  async getStockReceptionReport(filters = {}) {
+    const params = new URLSearchParams(filters).toString();
+    return await this.request(`/stock-entries/reception_report/${params ? '?' + params : ''}`);
+  }
+
+  async getStockExpiryAlerts() {
+    return await this.request('/stock-entries/expiry_alerts/');
   }
 
   // Dispensations
