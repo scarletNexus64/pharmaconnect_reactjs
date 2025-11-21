@@ -599,8 +599,8 @@ const LandingPage = ({ onLogin }) => {
             </p>
             
             <div className="flex flex-wrap justify-center gap-8 text-sm text-gray-500 pt-8">
-              <div>📧 contact@pharmaconnect.com</div>
-              <div>📱 +XXX XXX XXX XXX</div>
+              <div>📧 ousmailasago@yahoo.fr</div>
+              <div>📱 +237 699 055 803</div>
               <div>🌍 www.pharmaconnect.com</div>
             </div>
 

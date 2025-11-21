@@ -22,26 +22,22 @@ const ProjectDetail = () => {
   const [activeTab, setActiveTab] = useState('overview');
   const { user, logout } = useAuth();
 
-  useEffect(() => {
-    loadProjectData();
-  }, [id, loadProjectData]);
-
   const loadProjectData = useCallback(async () => {
     try {
       setLoading(true);
-      
+
       // Charger les données du projet
       const projectRes = await apiService.request(`/projects/${id}/`);
       setProject(projectRes);
 
       // Charger les données liées en parallèle
       const [stockRes, dispensationsRes, inventoriesRes] = await Promise.all([
-        apiService.request('/stock-entries/', { 
+        apiService.request('/stock-entries/', {
           method: 'GET',
           headers: { ...apiService.getHeaders() }
         }).then(res => res.results?.filter(entry => entry.project === parseInt(id)) || []).catch(() => []),
         apiService.request('/dispensations/', {
-          method: 'GET', 
+          method: 'GET',
           headers: { ...apiService.getHeaders() }
         }).then(res => res.results?.filter(disp => disp.project === parseInt(id)) || []).catch(() => []),
         apiService.request('/inventories/', {
@@ -76,6 +72,10 @@ const ProjectDetail = () => {
       setLoading(false);
     }
   }, [id, navigate]);
+
+  useEffect(() => {
+    loadProjectData();
+  }, [loadProjectData]);
 
   const handleLogout = async () => {
     await logout();

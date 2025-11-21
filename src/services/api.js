@@ -1,5 +1,5 @@
 // Configuration de base pour l'API
-const API_BASE_URL = 'http://192.168.1.150:8001/api';
+const API_BASE_URL = 'http://192.168.1.149:8001/api';
 
 class ApiService {
   constructor() {

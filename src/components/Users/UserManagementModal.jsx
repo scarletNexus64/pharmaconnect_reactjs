@@ -387,10 +387,9 @@ const UserManagementModal = ({ user, onClose, onSave }) => {
                       name="organization"
                       value={formData.organization}
                       onChange={handleChange}
-                      disabled={!isEditMode}
                       className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent ${
                         errors.organization ? 'border-red-300' : 'border-gray-300'
-                      } ${!isEditMode ? 'bg-gray-50 cursor-not-allowed' : ''}`}
+                      }`}
                     >
                       <option value="">Sélectionner une organisation</option>
                       {organizations.map(org => (
@@ -400,7 +399,7 @@ const UserManagementModal = ({ user, onClose, onSave }) => {
                   </div>
                   {!isEditMode && (
                     <p className="mt-1 text-xs text-gray-500">
-                      Les utilisateurs sont automatiquement assignés à votre organisation
+                      Vous ne pouvez assigner que des utilisateurs à votre organisation
                     </p>
                   )}
                   {errors.organization && <p className="mt-1 text-sm text-red-600">{errors.organization}</p>}

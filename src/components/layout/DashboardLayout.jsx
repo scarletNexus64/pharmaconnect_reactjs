@@ -77,12 +77,12 @@ const DashboardLayout = ({ children }) => {
               </div>
 
               <button
-                onClick={() => setShowNotifications(!showNotifications)}
-                className="relative p-2 text-gray-400 hover:text-gray-500"
+                onClick={() => navigate('/notifications')}
+                className="relative p-2 text-gray-400 hover:text-gray-500 transition-colors"
               >
                 <Bell className="w-6 h-6" />
                 <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                  0
+                  3
                 </span>
               </button>
 

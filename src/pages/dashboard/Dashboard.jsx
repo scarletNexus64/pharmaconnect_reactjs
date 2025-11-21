@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import {
   Activity, Package, AlertTriangle,
-  ShoppingCart, Upload, Camera, FileText
+  ShoppingCart, FolderOpen, Users, User
 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import Card from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
 import ProtectedRoute from '../../components/ProtectedRoute';
@@ -11,6 +12,7 @@ import apiService from '../../services/api';
 const Dashboard = () => {
   const [dashboardData, setDashboardData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     loadDashboardData();
@@ -137,24 +139,67 @@ const Dashboard = () => {
 
               {/* Quick Actions */}
               <Card className="p-6">
-                <h3 className="text-lg font-medium text-gray-900 mb-4">Actions Rapides</h3>
+                <h3 className="text-lg font-semibold text-gray-900 mb-6">Actions Rapides</h3>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  <Button variant="outline" className="flex flex-col items-center p-4 h-auto">
-                    <Camera className="w-6 h-6 mb-2" />
-                    <span className="text-sm">Photo Ordonnance</span>
-                  </Button>
-                  <Button variant="outline" className="flex flex-col items-center p-4 h-auto">
-                    <Package className="w-6 h-6 mb-2" />
-                    <span className="text-sm">Nouvel Inventaire</span>
-                  </Button>
-                  <Button variant="outline" className="flex flex-col items-center p-4 h-auto">
-                    <Upload className="w-6 h-6 mb-2" />
-                    <span className="text-sm">Entrée Stock</span>
-                  </Button>
-                  <Button variant="outline" className="flex flex-col items-center p-4 h-auto">
-                    <FileText className="w-6 h-6 mb-2" />
-                    <span className="text-sm">Rapport</span>
-                  </Button>
+                  <button
+                    onClick={() => navigate('/projects')}
+                    className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-green-500 transition-all duration-300 p-6 bg-gradient-to-br from-blue-50 to-purple-50 hover:shadow-lg"
+                  >
+                    <div className="flex flex-col items-center space-y-3">
+                      <div className="w-14 h-14 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl flex items-center justify-center transform group-hover:scale-110 transition-transform duration-300">
+                        <FolderOpen className="w-7 h-7 text-white" />
+                      </div>
+                      <div className="text-center">
+                        <span className="text-sm font-semibold text-gray-900">Projets</span>
+                        <p className="text-xs text-gray-500 mt-1">Gérer les projets</p>
+                      </div>
+                    </div>
+                  </button>
+
+                  <button
+                    onClick={() => navigate('/users')}
+                    className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-green-500 transition-all duration-300 p-6 bg-gradient-to-br from-green-50 to-teal-50 hover:shadow-lg"
+                  >
+                    <div className="flex flex-col items-center space-y-3">
+                      <div className="w-14 h-14 bg-gradient-to-r from-green-500 to-teal-500 rounded-xl flex items-center justify-center transform group-hover:scale-110 transition-transform duration-300">
+                        <Users className="w-7 h-7 text-white" />
+                      </div>
+                      <div className="text-center">
+                        <span className="text-sm font-semibold text-gray-900">Utilisateurs</span>
+                        <p className="text-xs text-gray-500 mt-1">Gérer les utilisateurs</p>
+                      </div>
+                    </div>
+                  </button>
+
+                  <button
+                    onClick={() => navigate('/stock')}
+                    className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-green-500 transition-all duration-300 p-6 bg-gradient-to-br from-orange-50 to-yellow-50 hover:shadow-lg"
+                  >
+                    <div className="flex flex-col items-center space-y-3">
+                      <div className="w-14 h-14 bg-gradient-to-r from-orange-500 to-yellow-500 rounded-xl flex items-center justify-center transform group-hover:scale-110 transition-transform duration-300">
+                        <Package className="w-7 h-7 text-white" />
+                      </div>
+                      <div className="text-center">
+                        <span className="text-sm font-semibold text-gray-900">Stocks</span>
+                        <p className="text-xs text-gray-500 mt-1">Gérer le stock</p>
+                      </div>
+                    </div>
+                  </button>
+
+                  <button
+                    onClick={() => navigate('/profile')}
+                    className="group relative overflow-hidden rounded-xl border-2 border-gray-200 hover:border-green-500 transition-all duration-300 p-6 bg-gradient-to-br from-pink-50 to-red-50 hover:shadow-lg"
+                  >
+                    <div className="flex flex-col items-center space-y-3">
+                      <div className="w-14 h-14 bg-gradient-to-r from-pink-500 to-red-500 rounded-xl flex items-center justify-center transform group-hover:scale-110 transition-transform duration-300">
+                        <User className="w-7 h-7 text-white" />
+                      </div>
+                      <div className="text-center">
+                        <span className="text-sm font-semibold text-gray-900">Profile</span>
+                        <p className="text-xs text-gray-500 mt-1">Mon profil</p>
+                      </div>
+                    </div>
+                  </button>
                 </div>
               </Card>
 

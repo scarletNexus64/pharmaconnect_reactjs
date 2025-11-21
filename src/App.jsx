@@ -42,6 +42,8 @@ import HealthFacilities from './pages/health-facilities/HealthFacilities';
 import Stock from './pages/stock/Stock';
 import Dispensation from './pages/dispensation/Dispensation';
 import Users from './pages/users/Users';
+import Profile from './pages/profile/Profile';
+import Notifications from './pages/notifications/Notifications';
 
 // Layout
 import DashboardLayout from './components/layout/DashboardLayout';
@@ -387,7 +389,14 @@ function App() {
             <Dispensation />
           </DashboardLayout>
         } />
-        
+
+        {/* Notifications Routes */}
+        <Route path="/notifications" element={
+          <DashboardLayout>
+            <Notifications />
+          </DashboardLayout>
+        } />
+
         <Route path="/health-facilities-old" element={
           <ProtectedRoute userRole={userRole} allowedRoles={['Admin ONG', 'Gestionnaire Projet']}>
             <HealthFacilitiesManager />
@@ -440,15 +449,15 @@ function App() {
 
         {/* Settings Routes */}
         <Route path="/settings/user" element={
-          <ProtectedRoute userRole={userRole}>
-            <UserProfile />
-          </ProtectedRoute>
+          <DashboardLayout>
+            <Profile />
+          </DashboardLayout>
         } />
-        
+
         <Route path="/profile" element={
-          <ProtectedRoute userRole={userRole}>
-            <UserProfile />
-          </ProtectedRoute>
+          <DashboardLayout>
+            <Profile />
+          </DashboardLayout>
         } />
 
         <Route path="/settings/organization" element={
