@@ -241,16 +241,6 @@ const Login = ({ onBack }) => {
                 >
                   Se connecter
                 </Button>
-
-                {/* <div className="text-center">
-                  <button
-                    type="button"
-                    className="text-sm text-blue-600 hover:text-blue-700 transition-colors"
-                    disabled={loading}
-                  >
-                    Mot de passe oublié ?
-                  </button>
-                </div> */}
               </div>
             </form>
 

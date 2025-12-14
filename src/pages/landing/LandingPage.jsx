@@ -12,7 +12,6 @@ import {
   Bars3Icon,
   XMarkIcon,
   ChevronDownIcon,
-  PlayCircleIcon,
   PhoneIcon,
   EnvelopeIcon,
   MapPinIcon
