@@ -1,5 +1,6 @@
 // Configuration de base pour l'API
-const API_BASE_URL = 'http://192.168.1.149:8001/api';
+const API_BASE_URL = 'https://api-pharmaconnect.shop/api';
+// const API_BASE_URL = 'http://localhost:8000/api';
 
 class ApiService {
   constructor() {
