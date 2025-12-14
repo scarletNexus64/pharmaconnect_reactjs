@@ -242,18 +242,7 @@ const Login = ({ onBack }) => {
                   Se connecter
                 </Button>
 
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="lg"
-                  className="w-full border-green-500 text-green-600 hover:bg-green-50"
-                  onClick={handleDemoClick}
-                  disabled={loading}
-                >
-                  🎯 Acceder au test
-                </Button>
-
-                <div className="text-center">
+                {/* <div className="text-center">
                   <button
                     type="button"
                     className="text-sm text-blue-600 hover:text-blue-700 transition-colors"
@@ -261,7 +250,7 @@ const Login = ({ onBack }) => {
                   >
                     Mot de passe oublié ?
                   </button>
-                </div>
+                </div> */}
               </div>
             </form>
 
